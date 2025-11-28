@@ -6,7 +6,7 @@
   "scripts": {
     "lint": "npx eslint src/**/*.ts",
     "build": "tsc",
-    "dev": "npx nodemon -L src/app.ts ",
+    "dev": "ts-node-dev --respawn --transpile-only src/app.ts",
     "start": "ts-node src/app.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -26,6 +26,8 @@
     "typescript": "^5.4.5"
   },
   "dependencies": {
+    "@types/cors": "^2.8.19",
+    "cors": "^2.8.5",
     "express": "^4.19.2",
     "mongoose": "^8.3.2",
     "validator": "^13.11.0"
