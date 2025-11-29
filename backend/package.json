@@ -26,6 +26,7 @@
     "typescript": "^5.4.5"
   },
   "dependencies": {
+    "@faker-js/faker": "^10.1.0",
     "@types/cors": "^2.8.19",
     "cors": "^2.8.5",
     "express": "^4.19.2",
