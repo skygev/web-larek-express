@@ -25,7 +25,7 @@ mongoose.connect(DB_ADDRESS);
 app.use('/product', productRouter);
 app.use('/order', orderRouter);
 
-app.use('*', (req, res, next) => next(new NotFoundError('Маршрут не найден')));
+app.use('*', (_req, _res, next) => next(new NotFoundError('Маршрут не найден')));
 
 app.use(errorLogger);
 app.use(celebrateErrors());

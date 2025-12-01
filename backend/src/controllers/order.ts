@@ -4,7 +4,7 @@ import validator from 'validator';
 import Product from '../models/product';
 import { BadRequestError } from '../errors';
 
-export const createOrder = async (req: Request, res: Response, next: NextFunction) => {
+const createOrder = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const {
       payment,
@@ -64,3 +64,5 @@ export const createOrder = async (req: Request, res: Response, next: NextFunctio
     return next(err);
   }
 };
+
+export default createOrder;
