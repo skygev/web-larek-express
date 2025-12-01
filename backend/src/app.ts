@@ -4,6 +4,8 @@ import mongoose from 'mongoose';
 import path from 'path';
 import productRouter from './routes/product';
 import orderRouter from './routes/order';
+import errorHandler from './middlewares/error-handler';
+import { NotFoundError } from './errors';
 
 const { PORT = 3000, DB_ADDRESS = 'mongodb://127.0.0.1:27017/weblarek' } = process.env;
 
@@ -18,6 +20,10 @@ mongoose.connect(DB_ADDRESS);
 
 app.use('/product', productRouter);
 app.use('/order', orderRouter);
+
+app.use('*', (req, res, next) => next(new NotFoundError('Маршрут не найден')));
+
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   process.stdout.write(`Server is running on port ${PORT}\n`);

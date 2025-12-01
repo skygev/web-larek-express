@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { faker } from '@faker-js/faker';
 import validator from 'validator';
 import Product from '../models/product';
+import { BadRequestError } from '../errors';
 
 export const createOrder = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -15,45 +16,45 @@ export const createOrder = async (req: Request, res: Response, next: NextFunctio
     } = req.body;
 
     if (payment !== 'card' && payment !== 'online') {
-      return res.status(400).json({ message: 'Invalid payment type' });
+      return next(new BadRequestError('Некорректный способ оплаты'));
     }
 
     if (!email || typeof email !== 'string' || !validator.isEmail(email)) {
-      return res.status(400).json({ message: 'Invalid email' });
+      return next(new BadRequestError('Некорректный email'));
     }
 
     if (!phone || typeof phone !== 'string') {
-      return res.status(400).json({ message: 'Invalid phone' });
+      return next(new BadRequestError('Некорректный телефон'));
     }
 
     if (!address || typeof address !== 'string') {
-      return res.status(400).json({ message: 'Invalid address' });
+      return next(new BadRequestError('Некорректный адрес'));
     }
 
     if (typeof total !== 'number' || Number.isNaN(total)) {
-      return res.status(400).json({ message: 'Invalid total' });
+      return next(new BadRequestError('Некорректная сумма заказа'));
     }
 
     if (!Array.isArray(items) || items.length === 0) {
-      return res.status(400).json({ message: 'Items must be a non-empty array' });
+      return next(new BadRequestError('Список товаров не может быть пустым'));
     }
 
     const products = await Product.find({ _id: { $in: items } });
 
     if (products.length !== items.length) {
-      return res.status(400).json({ message: 'One or more products not found' });
+      return next(new BadRequestError('Один или несколько товаров не найдены'));
     }
 
     const productWithoutPrice = products.find((product) => product.price === null);
 
     if (productWithoutPrice) {
-      return res.status(400).json({ message: 'One or more products have no price' });
+      return next(new BadRequestError('Один или несколько товаров не имеют цены'));
     }
 
     const calculatedTotal = products.reduce((sum, product) => sum + (product.price as number), 0);
 
     if (calculatedTotal !== total) {
-      return res.status(400).json({ message: 'Total does not match sum of product prices' });
+      return next(new BadRequestError('Сумма заказа не совпадает с суммой товаров'));
     }
 
     const id = faker.string.uuid();
