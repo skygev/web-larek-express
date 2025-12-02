@@ -7,6 +7,7 @@ import { errors as celebrateErrors } from 'celebrate';
 import productRouter from './routes/product';
 import orderRouter from './routes/order';
 import errorHandler from './middlewares/error-handler';
+import errorConverter from './middlewares/error-converter';
 import { NotFoundError } from './errors';
 import { requestLogger, errorLogger } from './middlewares/logger';
 
@@ -32,6 +33,7 @@ app.use('*', (_req, _res, next) => next(new NotFoundError('Маршрут не �
 
 app.use(errorLogger);
 app.use(celebrateErrors());
+app.use(errorConverter);
 app.use(errorHandler);
 
 app.listen(PORT, () => {
