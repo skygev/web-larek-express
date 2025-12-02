@@ -1,0 +1,36 @@
+import { Request, Response, NextFunction } from 'express';
+import { faker } from '@faker-js/faker';
+import Product from '../models/product';
+import { BadRequestError } from '../errors';
+
+const createOrder = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { total, items } = req.body;
+
+    const products = await Product.find({ _id: { $in: items } });
+
+    if (products.length !== items.length) {
+      return next(new BadRequestError('Один или несколько товаров не найдены'));
+    }
+
+    const productWithoutPrice = products.find((product) => product.price === null);
+
+    if (productWithoutPrice) {
+      return next(new BadRequestError('Один или несколько товаров не имеют цены'));
+    }
+
+    const calculatedTotal = products.reduce((sum, product) => sum + (product.price as number), 0);
+
+    if (calculatedTotal !== total) {
+      return next(new BadRequestError('Сумма заказа не совпадает с суммой товаров'));
+    }
+
+    const id = faker.string.uuid();
+
+    return res.status(200).json({ id, total });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export default createOrder;
